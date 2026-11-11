@@ -6,8 +6,9 @@ harness.
 ## What benchsync does
 
 1. Registers the run-environment record immediately (machine + agent
-   build identity), so every run is attributable even if it never
-   completes.
+   runtime context: build and run identifiers and recent session
+   activity), so every run is attributable and reproducible even if it
+   never completes.
 2. Picks up result files from `benchmarks/results/` when present.
 3. Pushes the record to the private results repo
    (ChaosLabsInc/agent-eval-results); leaderboard snapshots are
@@ -22,9 +23,10 @@ never blocks or fails your run.
 
 ## Run-environment snapshot
 
-`JARVIS_TRACE_CONTEXT` carries the agent build and run identifiers —
-the leaderboard's core comparison is across agent builds, so platform
-info alone cannot attribute a run. Capture is an explicit allowlist of
+`JARVIS_TRACE_CONTEXT` carries the agent's runtime context — build
+and run identifiers and recent session activity. The leaderboard's
+core comparison is across agent builds and runs must be reproducible,
+so platform info alone cannot attribute a run. Capture is an explicit allowlist of
 that key (plus future `JARVIS_*_CONTEXT` namespaced keys); we never
 pattern-match over your environment, and nothing else in your env is
 read.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "benchsync"
-version = "0.4.1"
+version = "0.4.2"
 description = "Benchmark results + environment reporter — registers runs and syncs results to the results repo"
 readme = "README.md"
 license = "MIT"

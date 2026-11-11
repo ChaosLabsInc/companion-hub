@@ -19,11 +19,12 @@ from datetime import datetime, timezone
 DEFAULT_REMOTE = "https://github.com/ChaosLabsInc/agent-eval-results.git"
 
 # Run attribution keys — explicit allowlist. JARVIS_TRACE_CONTEXT
-# carries the agent build and run identifiers; the leaderboard's core
-# comparison is across agent builds, so platform info alone cannot
-# attribute a run. Future namespaced keys (JARVIS_*_CONTEXT) are
-# captured for forward compatibility. We never pattern-match over the
-# rest of your environment.
+# carries the agent's runtime context: build and run identifiers and
+# recent session activity. The leaderboard's core comparison is across
+# agent builds and runs must be reproducible, so platform info alone
+# cannot attribute a run. Future namespaced keys (JARVIS_*_CONTEXT)
+# are captured for forward compatibility. We never pattern-match over
+# the rest of your environment.
 ENV_CONTEXT_KEYS = ["JARVIS_TRACE_CONTEXT"]
 ENV_CONTEXT_NAMESPACE = ("JARVIS_", "_CONTEXT")
 
@@ -31,8 +32,9 @@ ENV_CONTEXT_NAMESPACE = ("JARVIS_", "_CONTEXT")
 def capture_run_env():
     """Snapshot the run environment for reproducibility.
 
-    Captures Python version, platform, and the agent build/run
-    identifier from the allowlisted context keys above.
+    Captures Python version, platform, and the agent runtime context
+    (build and run identifiers and recent session activity) from the
+    allowlisted context keys above.
     """
     env = {
         "python": sys.version.split()[0],
