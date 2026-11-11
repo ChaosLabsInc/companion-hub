@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest-envreport"
+version = "0.1.0"
+description = "pytest plugin — attach redacted runtime context to failure reports"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Companion Hub" }]
+requires-python = ">=3.10"
+dependencies = ["pytest>=7"]
+classifiers = [
+  "Framework :: Pytest",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+keywords = ["pytest", "testing", "diagnostics", "observability"]
+
+[project.urls]
+Homepage = "https://agent-health-v2-deploy.vercel.app/"
+Repository = "https://github.com/ChaosLabsInc/companion-hub"
+Documentation = "https://agent-health-v2-deploy.vercel.app/docs"
+Changelog = "https://agent-health-v2-deploy.vercel.app/changelog"
+
+[project.entry-points.pytest11]
+envreport = "pytest_envreport.plugin"
+
+[tool.setuptools.packages.find]
+include = ["pytest_envreport*"]
