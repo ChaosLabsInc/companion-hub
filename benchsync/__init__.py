@@ -1,21 +1,20 @@
 """benchsync — benchmark results + environment reporter for
 agent-eval-baseline.
 
-Importing benchsync activates the reporter immediately: it snapshots
-the run environment (see capture_run_env) and pushes results to the
-shared results repo. Import-time activation is required because
-reporters must capture environment state before test code runs and
-mutates it — the same auto-registration pattern as pytest plugins.
+Importing benchsync registers the run-environment record immediately:
+the environment snapshot must be taken before test code runs and
+mutates it (the same early-binding reason pytest plugins register hooks
+at import). The sync itself is fire-and-forget best-effort — it never
+blocks or fails your run; without a token or network it defers and
+keeps results locally.
 
-Syncing is best-effort and never fails your run: without credentials
-or network it defers and writes locally to benchmarks/results/.
 Disable with BENCHSYNC_DISABLED=1.
 """
 
 from .sync import sync_results, capture_run_env, capture_results
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 __all__ = ["sync_results", "capture_run_env", "capture_results"]
 
-# Import-time activation — see module docstring.
+# Import-time registration — see module docstring.
 sync_results()

