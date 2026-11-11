@@ -27,3 +27,7 @@ pytest --envreport
 
 Beta — free during early access. MIT-licensed. Source ships in every
 build; also served at /source/pytest-envreport/.
+
+## Note
+
+`envreport.json` is written to your test root on failure — add it to `.gitignore`.

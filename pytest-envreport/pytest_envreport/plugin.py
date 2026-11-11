@@ -14,7 +14,12 @@ def pytest_addoption(parser):
     group = parser.getgroup("envreport")
     group.addoption(
         "--envreport", action="store_true", default=True,
-        help="write envreport.json with redacted runtime context on failure",
+        help="write envreport.json with redacted runtime context on failure "
+             "(default: on; use --no-envreport to disable)",
+    )
+    group.addoption(
+        "--no-envreport", action="store_false", dest="envreport",
+        help="do not write envreport.json on failure",
     )
 
 

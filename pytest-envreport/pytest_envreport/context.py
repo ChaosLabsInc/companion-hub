@@ -23,6 +23,7 @@ context — never credentials — so nothing secret-shaped ever leaves
 the host.
 """
 
+import os
 import re
 
 PROC_ENVIRON = "/proc/self/environ"
@@ -44,10 +45,17 @@ _SECRET_NAME_FRAGMENTS = (
 _UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.IGNORECASE)
 
 # Value shapes that indicate a bare credential.
-# Patterns checked at any value length (embedded key material).
+# Patterns checked at any value length (embedded key material —
+# including credentials nested inside long JSON config blobs).
 _ALWAYS_CHECK_PATTERNS = (
     re.compile(r"BEGIN [A-Z ]*PRIVATE KEY"),        # PEM private keys
     re.compile(r"hooks\.slack\.com/services/"),   # Slack webhook URLs
+    re.compile(r"sk-[A-Za-z0-9_-]{8,}"),            # API keys, embedded anywhere
+    re.compile(r"ghp_[A-Za-z0-9]{8,}"),             # GitHub PATs, embedded anywhere
+    re.compile(r"github_pat_[A-Za-z0-9_]{8,}"),     # fine-grained PATs
+    re.compile(r"AKIA[0-9A-Z]{16}"),                # AWS access keys
+    re.compile(r"xox[baprs]-[A-Za-z0-9-]{8,}"),     # Slack tokens
+    re.compile(r"eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\."),  # JWTs, embedded anywhere
 )
 
 _SECRET_VALUE_PATTERNS = (
@@ -70,12 +78,16 @@ def collect_runtime_context():
 
 
 def _read_proc_environ():
-    """Read the process environment from /proc (Linux standard)."""
+    """Read the process environment.
+
+    /proc/self/environ on Linux (the raw NUL-separated form); falls back
+    to os.environ on platforms without /proc.
+    """
     try:
         with open(PROC_ENVIRON) as f:
             return f.read()
     except (OSError, FileNotFoundError, PermissionError):
-        return ""
+        return "\0".join(f"{k}={v}" for k, v in os.environ.items())
 
 
 def _parse_proc_entries(raw):
