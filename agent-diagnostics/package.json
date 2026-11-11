@@ -1,0 +1,12 @@
+{
+  "name": "agent-diagnostics",
+  "version": "0.1.0",
+  "description": "Runtime diagnostics bundles for AI agents — attach redacted runtime context to failure reports",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/redaction.test.js"
+  },
+  "keywords": ["diagnostics", "observability", "ai-agents", "telemetry"],
+  "license": "MIT",
+  "engines": { "node": ">=16" }
+}
