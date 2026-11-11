@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "baseline-utils"
+version = "0.2.1"
+description = "Shared fixtures for agent-runtime baseline test suites"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Companion Hub" }]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.urls]
+Homepage = "https://companionhub.dev/"
+Repository = "https://github.com/ChaosLabsInc/companion-hub"
+Changelog = "https://companionhub.dev/changelog"
+
+[project.entry-points.pytest11]
+baseline_utils = "baseline_utils.fixtures"
+
+[tool.setuptools.packages.find]
+include = ["baseline_utils*"]

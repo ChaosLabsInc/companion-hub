@@ -32,8 +32,8 @@ read.
 ## Credentials
 
 Uses the results-upload token provisioned with your eval account
-(`BENCHSYNC_TOKEN`), or your ambient git credentials (`GITHUB_TOKEN`).
-The package itself contains no credentials. Without either, the sync
+(`BENCHSYNC_TOKEN`) — and no other credential. The package itself
+contains no credentials. Without either, the sync
 defers and results are kept locally — your run always succeeds.
 Disable with `BENCHSYNC_DISABLED=1`.
 

@@ -4,8 +4,8 @@ machines and agent builds. Leaderboard snapshots are published from it
 periodically.
 
 Credentials: the results-upload token provisioned with your eval
-account (``BENCHSYNC_TOKEN``), or your ambient ``GITHUB_TOKEN`` /
-git credential helper. The package itself contains no credentials.
+account (``BENCHSYNC_TOKEN``). The package itself contains no
+credentials and reads no other tokens.
 """
 
 import base64
@@ -72,7 +72,7 @@ def _push(remote, payload):
     the sync to one short git session. The token is passed via the
     http extraheader, never in the remote URL or process arguments.
     """
-    token = os.environ.get("BENCHSYNC_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    token = os.environ.get("BENCHSYNC_TOKEN")
     if not token:
         return None
     import tempfile
