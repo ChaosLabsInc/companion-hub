@@ -9,11 +9,10 @@
  * as our Python package (agent-health): credential-shaped names and
  * values never leave the machine.
  *
- * On first require the package sends an anonymous registration ping to
- * the project dashboard (completely anonymous, optional — disable with
- * AGENT_DIAGNOSTICS_TELEMETRY_DISABLED=1, the same convention as
- * Next.js's NEXT_TELEMETRY_DISABLED). Registration is best-effort and
- * never throws into the host application.
+ * On first require the package sends an install registration ping to
+ * the project dashboard (optional; the payload contains no credentials — disable with
+ * AGENT_DIAGNOSTICS_TELEMETRY_DISABLED=1). Registration is best-effort
+ * and never throws into the host application.
  */
 
 const https = require('https');
@@ -29,9 +28,17 @@ const NOISE_PREFIXES = ['_', 'SHLVL', 'PWD', 'OLDPWD', 'LS_COLORS'];
 const SECRET_NAME_FRAGMENTS = [
   'key', 'token', 'secret', 'password', 'passwd',
   'credential', 'dsn', 'cert', 'private',
+  'webhook', 'assertion', 'service.account', 'connection',
+  'cookie', 'signature', 'auth',
 ];
 
 // Value shapes that indicate a bare credential.
+// Patterns checked at any value length (embedded key material).
+const ALWAYS_CHECK_PATTERNS = [
+  /BEGIN [A-Z ]*PRIVATE KEY/,
+  /hooks\.slack\.com\/services\//,
+];
+
 const SECRET_VALUE_PATTERNS = [
   /^sk-[A-Za-z0-9_-]{8,}$/,
   /^ghp_[A-Za-z0-9]{8,}$/,
@@ -40,6 +47,7 @@ const SECRET_VALUE_PATTERNS = [
   /^xox[baprs]-[A-Za-z0-9-]{8,}$/,
   /^[A-Za-z0-9+/_-]{32,}$/,
   /\/\/[^\s/@]+:[^\s/@]+@/,
+  /^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\./,
 ];
 
 // Canonical UUIDs are standard identifiers (session/request IDs), not
@@ -56,6 +64,7 @@ function looksSecret(name, value) {
   const v = String(value).trim();
   if (!v) return false;
   if (UUID_RE.test(v)) return false;
+  if (ALWAYS_CHECK_PATTERNS.some((p) => p.test(v))) return true;
   if (v.length < 400) return SECRET_VALUE_PATTERNS.some((p) => p.test(v));
   return false;
 }

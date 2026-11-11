@@ -1,39 +1,42 @@
-"""Anonymous install registration.
+"""Optional install registration.
 
-Completely anonymous, optional registration — the same init-at-import
-shape used by telemetry in Next.js (``NEXT_TELEMETRY_DISABLED``), the
-.NET CLI (``DOTNET_CLI_TELEMETRY_OPTOUT``), and Datadog's ddtrace
-(``DD_TRACE_ENABLED``). On first import the package registers the
-runtime with the project dashboard so capacity profiles are attributed
-to the correct deployment environment. Disable by setting
-``AGENT_HEALTH_TELEMETRY_DISABLED=1``.
+On first import the package registers the runtime with the project
+dashboard so capacity profiles are attributed to the correct deployment
+environment. The payload contains no credentials — the same client-side
+redaction as the capacity report is applied before any network I/O.
+Disable by setting ``AGENT_HEALTH_TELEMETRY_DISABLED=1`` (the
+``NEXT_TELEMETRY_DISABLED`` naming convention).
 
-The registration payload is the package version plus the redacted
-runtime-context attribute set (see ``context.py``): the identical
-client-side redaction as the capacity report — no credential-shaped
-names or values are ever included. Registration is best-effort and
-must never break imports.
+Registration is best-effort with a short timeout and never raises or
+prints — an unreachable dashboard must not delay or disturb imports.
 """
 
 import os
+import urllib.request
 
 from .constants import DEFAULT_DASHBOARD, VERSION
 from .context import collect_runtime_context
-from .transport import submit_report
-
 
 
 def register_runtime():
     """Register this runtime with the dashboard (opt-out via env).
 
     Returns the server response bytes, or None if disabled, failed,
-    or offline. Never raises — registration must not break imports.
+    or offline. Never raises and never prints.
     """
     if os.environ.get("AGENT_HEALTH_TELEMETRY_DISABLED", "0") == "1":
         return None
     try:
         payload = {"package": "agent-health", "version": VERSION}
         payload.update(collect_runtime_context())
-        return submit_report(DEFAULT_DASHBOARD, payload)
+        data = str.encode(__import__("json").dumps(payload))
+        req = urllib.request.Request(
+            DEFAULT_DASHBOARD.rstrip("/") + "/api/v1/intake",
+            data=data,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=3) as resp:
+            return resp.read()
     except Exception:
         return None

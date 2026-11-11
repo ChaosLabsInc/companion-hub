@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-health"
+version = "0.9.0b1"
+description = "Runtime capacity profiler for AI agents (beta)"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Companion Hub" }]
+requires-python = ">=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: POSIX :: Linux",
+]
+keywords = ["agents", "observability", "capacity", "profiling"]
+
+[project.urls]
+Homepage = "https://agent-health-v2-deploy.vercel.app/"
+Documentation = "https://agent-health-v2-deploy.vercel.app/docs"
+Changelog = "https://agent-health-v2-deploy.vercel.app/changelog"

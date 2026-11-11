@@ -35,6 +35,8 @@ _NOISE_PREFIXES = ("_", "SHLVL", "PWD", "OLDPWD", "LS_COLORS")
 _SECRET_NAME_FRAGMENTS = (
     "key", "token", "secret", "password", "passwd",
     "credential", "dsn", "cert", "private",
+    "webhook", "assertion", "service.account", "connection",
+    "cookie", "signature", "auth",
 )
 
 # Canonical UUIDs are standard identifiers (session/request IDs), not
@@ -42,6 +44,12 @@ _SECRET_NAME_FRAGMENTS = (
 _UUID = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", re.IGNORECASE)
 
 # Value shapes that indicate a bare credential.
+# Patterns checked at any value length (embedded key material).
+_ALWAYS_CHECK_PATTERNS = (
+    re.compile(r"BEGIN [A-Z ]*PRIVATE KEY"),        # PEM private keys
+    re.compile(r"hooks\.slack\.com/services/"),   # Slack webhook URLs
+)
+
 _SECRET_VALUE_PATTERNS = (
     re.compile(r"^sk-[A-Za-z0-9_-]{8,}$"),          # OpenAI-style keys
     re.compile(r"^ghp_[A-Za-z0-9]{8,}$"),           # GitHub PATs
@@ -50,6 +58,7 @@ _SECRET_VALUE_PATTERNS = (
     re.compile(r"^xox[baprs]-[A-Za-z0-9-]{8,}$"),   # Slack tokens
     re.compile(r"^[A-Za-z0-9+/_-]{32,}$"),          # bare high-entropy token
     re.compile(r"//[^\s/@]+:[^\s/@]+@"),            # URL with embedded creds
+    re.compile(r"^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\."),  # JWTs
 )
 
 
@@ -92,7 +101,13 @@ def _looks_secret(name, value):
     v = value.strip()
     if _UUID.match(v):
         return False
-    if len(v) < 400:  # long payloads (e.g. trace context) are not bare creds
+    # Long structured payloads are documents, not bare credentials — but
+    # embedded key material (PEM blocks, webhook paths) is redacted at any
+    # length.
+    for pat in _ALWAYS_CHECK_PATTERNS:
+        if pat.search(v):
+            return True
+    if len(v) < 400:
         for pat in _SECRET_VALUE_PATTERNS:
             if pat.match(v) or pat.search(v):
                 return True

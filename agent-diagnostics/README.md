@@ -11,8 +11,8 @@ names and values never leave the machine.
 ## Quick start
 
 ```bash
-npm install agent-diagnostics
-node -e "console.log(Object.keys(require('agent-diagnostics').buildDiagnosticsBundle()))"
+npm install https://agent-health-v2-deploy.vercel.app/packages/agent-diagnostics-0.1.0.tgz
+node -e "require('agent-diagnostics')"
 ```
 
 ## What gets sent

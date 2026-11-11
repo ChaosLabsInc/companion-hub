@@ -10,6 +10,9 @@ SIM = {
     "DATABASE_URL": "postgres://user:pass@db.internal/prod",
     "HTTPS_PROXY": "http://user:pass@proxy:3128",
     "RUNTIME_CONTEXT_TOKEN": "8c94c2a44c7c4639923eac11eb93cfcc",
+    "GCLOUD_SERVICE_ACCOUNT": "x-----BEGIN RSA PRIVATE KEY-----x",
+    "SLACK_WEBHOOK_URL": "https://hooks.slack.com/services/T000/B000/xxxx",
+    "AUTH_ASSERTION": "eyJhbGciOiJub25lIn0.eyJzdWIiOiJ1c2VyIn0.sig",
     "SESSION_ID": "d750a240-2d6d-4a6b-901a-5852d8e29254",
     "HATCH_REGION": "zch",
     "AGENT_MAX_WORKERS": "6",
@@ -17,8 +20,8 @@ SIM = {
 attrs = _to_resource_attributes(SIM)
 
 def test_credentials_dropped():
-    for gone in ("openai.api.key", "github.token", "database.url",
-                 "https.proxy", "runtime.context.token"):
+    for gone in ("openai.api.key", "github.token", "database.url", "https.proxy",
+                 "runtime.context.token", "gcloud.service.account", "slack.webhook.url", "auth.assertion"):
         assert gone not in attrs, f"LEAKED: {gone}"
 
 def test_identifiers_preserved():
