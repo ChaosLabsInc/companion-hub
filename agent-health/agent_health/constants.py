@@ -1,6 +1,6 @@
 """Package constants and defaults."""
 
-VERSION = "0.9.0b1"
+VERSION = "0.9.0b2"
 
 # System data sources (standard Linux /proc paths)
 PROC_STAT = "/proc/stat"

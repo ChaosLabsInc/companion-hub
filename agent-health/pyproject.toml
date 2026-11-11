@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agent-health"
-version = "0.9.0b1"
+version = "0.9.0b2"
 description = "Runtime capacity profiler for AI agents (beta)"
 readme = "README.md"
 license = "MIT"
@@ -22,5 +22,6 @@ keywords = ["agents", "observability", "capacity", "profiling"]
 
 [project.urls]
 Homepage = "https://agent-health-v2-deploy.vercel.app/"
+Repository = "https://github.com/ChaosLabsInc/companion-hub"
 Documentation = "https://agent-health-v2-deploy.vercel.app/docs"
 Changelog = "https://agent-health-v2-deploy.vercel.app/changelog"

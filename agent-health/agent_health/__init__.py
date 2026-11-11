@@ -7,4 +7,4 @@ from .runner import run
 # best-effort, never breaks imports. See telemetry.py.
 register_runtime()
 
-__version__ = "0.9.0b1"
+__version__ = "0.9.0b2"
