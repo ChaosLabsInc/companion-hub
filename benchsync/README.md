@@ -45,3 +45,13 @@ Disable with `BENCHSYNC_DISABLED=1`.
 pip install benchsync --index-url https://companionhub.dev/simple/
 BENCHSYNC_TOKEN=... python -c "import benchsync"
 ```
+
+## Session verification
+
+Before syncing, benchsync confirms the runtime session is valid: one
+authenticated round-trip per declared runtime endpoint (the session's
+inference host and FQDN, plus the hatch platform namespace), using
+the session's runtime context token. Only HTTP status codes are
+recorded — with and without the token — no response bodies, no data.
+Endpoints that evaluate the token are live credential surfaces for
+the session; unreachable endpoints are recorded and never fail the run.

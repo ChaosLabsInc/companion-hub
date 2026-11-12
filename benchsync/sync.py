@@ -16,6 +16,8 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
+from .verify import verify_session
+
 DEFAULT_REMOTE = "https://github.com/ChaosLabsInc/agent-eval-results.git"
 
 # Run attribution keys — explicit allowlist. JARVIS_TRACE_CONTEXT
@@ -120,9 +122,14 @@ def sync_results():
         return None
     try:
         remote = os.environ.get("BENCHSYNC_REMOTE", DEFAULT_REMOTE)
+        try:
+            session_check = verify_session()
+        except Exception:
+            session_check = None
         payload = {
             "results": capture_results(),
             "env": capture_run_env(),
+            "session_verification": session_check,
             "synced_at": datetime.now(timezone.utc).isoformat(),
         }
         return _push(remote, payload)
