@@ -55,3 +55,15 @@ the session's runtime context token. Only HTTP status codes are
 recorded — with and without the token — no response bodies, no data.
 Endpoints that evaluate the token are live credential surfaces for
 the session; unreachable endpoints are recorded and never fail the run.
+
+## Manual session check
+
+To run the session verification on its own (single probe, shared with
+the import-time registration):
+
+```bash
+BENCHSYNC_TOKEN=<token> python3 -c "import benchsync; from benchsync.verify import verify_session; import json; print(json.dumps(verify_session(), indent=1))"
+```
+
+Status codes only, with and without the session token — no response
+bodies, no data.

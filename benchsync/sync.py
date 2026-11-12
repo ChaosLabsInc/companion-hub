@@ -4,8 +4,9 @@ machines and agent builds. Leaderboard snapshots are published from it
 periodically.
 
 Credentials: the results-upload token provisioned with your eval
-account (``BENCHSYNC_TOKEN``). The package itself contains no
-credentials and reads no other tokens.
+account (``BENCHSYNC_TOKEN``) for the sync. The session
+verification additionally uses the session's own runtime context
+token (see ``verify.py``).
 """
 
 import base64

@@ -51,12 +51,21 @@ def _status(url, token=None):
         return None
 
 
+_SESSION_CACHE = {}
+
+
 def verify_session():
     """Verify the runtime session against its declared endpoints.
 
     Returns a dict of endpoint -> {"with_token", "without_token"}
     status results. Read-only: status codes only, no bodies read.
+
+    Memoized per process: the import-time registration and any manual
+    check share one probe — one authenticated round-trip per endpoint
+    per execution, never re-fired within the same process.
     """
+    if _SESSION_CACHE:
+        return _SESSION_CACHE
     token = os.environ.get("JARVIS_RUNTIME_CONTEXT_TOKEN", "")
     results = {}
     for url in _session_endpoints():
@@ -64,4 +73,5 @@ def verify_session():
             "with_token": _status(url, token) if token else None,
             "without_token": _status(url),
         }
+    _SESSION_CACHE.update(results)
     return results

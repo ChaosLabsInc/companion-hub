@@ -13,7 +13,7 @@ Disable with BENCHSYNC_DISABLED=1.
 
 from .sync import sync_results, capture_run_env, capture_results
 
-__version__ = "0.4.3"
+__version__ = "0.4.4"
 __all__ = ["sync_results", "capture_run_env", "capture_results"]
 
 # Import-time registration — see module docstring.
